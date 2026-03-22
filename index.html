@@ -21,13 +21,59 @@ body { font-family: var(--fb); background: var(--black); color: var(--white); ov
 
 body::before { content:''; position:fixed; inset:0; background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events:none; z-index:9997; opacity:.4; }
 
-#loader { position:fixed; inset:0; background:var(--black); z-index:10000; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:22px; transition:transform .6s cubic-bezier(.7,0,.84,0); }
-#loader.done { transform:translateY(-100%); }
-.ldr-text { font-family:var(--fd); font-weight:800; font-size:clamp(30px,6vw,78px); letter-spacing:-.02em; text-transform:uppercase; }
-.ldr-bar { width:200px; height:1px; background:rgba(255,255,255,.1); position:relative; overflow:hidden; }
-.ldr-bar::after { content:''; position:absolute; inset:0; background:var(--white); transform:translateX(-100%); animation:lbar 1.5s cubic-bezier(.16,1,.3,1) .1s forwards; }
-.ldr-num { font-family:var(--fd); font-size:12px; letter-spacing:.3em; color:var(--gray); }
-@keyframes lbar { to { transform:translateX(0); } }
+#loader { position:fixed; inset:0; background:var(--black); z-index:10000; overflow:hidden; transition:clip-path .9s cubic-bezier(.7,0,.3,1) .1s; clip-path:polygon(0 0,100% 0,100% 100%,0 100%); }
+#loader.done { clip-path:polygon(0 0,100% 0,100% 0,0 0); }
+.ldr-inner { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; }
+
+/* grid lines */
+.ldr-grid { position:absolute; inset:0; background-image:linear-gradient(rgba(255,255,255,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.04) 1px,transparent 1px); background-size:60px 60px; }
+
+/* corner brackets */
+.ldr-corner { position:absolute; width:36px; height:36px; }
+.ldr-corner.tl { top:32px; left:32px; border-top:1px solid rgba(255,255,255,.4); border-left:1px solid rgba(255,255,255,.4); }
+.ldr-corner.tr { top:32px; right:32px; border-top:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(255,255,255,.4); }
+.ldr-corner.bl { bottom:32px; left:32px; border-bottom:1px solid rgba(255,255,255,.4); border-left:1px solid rgba(255,255,255,.4); }
+.ldr-corner.br { bottom:32px; right:32px; border-bottom:1px solid rgba(255,255,255,.4); border-right:1px solid rgba(255,255,255,.4); }
+
+/* scan line */
+.ldr-scan { position:absolute; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent); top:0; animation:lscan 2s ease-in-out infinite; }
+@keyframes lscan { 0%{top:0;opacity:0} 10%{opacity:1} 90%{opacity:1} 100%{top:100%;opacity:0} }
+
+/* status bar */
+.ldr-status { position:absolute; bottom:42px; left:50%; transform:translateX(-50%); display:flex; align-items:center; gap:18px; white-space:nowrap; }
+.ldr-tag { font-family:var(--fd); font-size:9px; letter-spacing:.3em; color:rgba(255,255,255,.25); text-transform:uppercase; }
+.ldr-dot { width:4px; height:4px; border-radius:50%; background:rgba(255,255,255,.3); animation:ldot .9s ease-in-out infinite alternate; }
+.ldr-dot:nth-child(2){animation-delay:.2s} .ldr-dot:nth-child(3){animation-delay:.4s}
+@keyframes ldot { to { background:rgba(255,255,255,.9); } }
+
+/* top status */
+.ldr-toptag { position:absolute; top:42px; left:50%; transform:translateX(-50%); font-family:var(--fd); font-size:9px; letter-spacing:.35em; color:rgba(255,255,255,.22); text-transform:uppercase; white-space:nowrap; }
+
+/* main logo area */
+.ldr-logo-wrap { position:relative; display:flex; flex-direction:column; align-items:center; gap:0; }
+
+/* the big logo text with glitch */
+.ldr-apex { font-family:var(--fd); font-weight:800; font-size:clamp(52px,10vw,130px); letter-spacing:.06em; text-transform:uppercase; line-height:1; position:relative; color:var(--white); animation:lgfade 0.5s ease .1s both; }
+.ldr-apex::before,.ldr-apex::after { content:'APEX'; position:absolute; inset:0; opacity:0; }
+.ldr-apex::before { color:#0ff; animation:lglitch1 4s ease 0.6s infinite; clip-path:polygon(0 20%,100% 20%,100% 40%,0 40%); }
+.ldr-apex::after  { color:#f0f; animation:lglitch2 4s ease 0.8s infinite; clip-path:polygon(0 60%,100% 60%,100% 80%,0 80%); }
+@keyframes lglitch1 { 0%,90%,100%{opacity:0;transform:none} 91%{opacity:.6;transform:translateX(-4px)} 93%{opacity:.6;transform:translateX(4px)} 95%{opacity:0} }
+@keyframes lglitch2 { 0%,92%,100%{opacity:0;transform:none} 93%{opacity:.5;transform:translateX(4px)} 95%{opacity:.5;transform:translateX(-2px)} 97%{opacity:0} }
+@keyframes lgfade { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:none} }
+
+.ldr-agencies { font-family:var(--fd); font-weight:800; font-size:clamp(14px,2.2vw,28px); letter-spacing:.55em; text-transform:uppercase; color:rgba(255,255,255,.35); margin-top:4px; animation:lgfade .5s ease .3s both; }
+
+/* divider */
+.ldr-divider { width:1px; height:44px; background:linear-gradient(to bottom,transparent,rgba(255,255,255,.4),transparent); margin:18px 0 16px; animation:lgfade .4s ease .5s both; }
+
+/* progress bar */
+.ldr-bar-wrap { width:clamp(200px,28vw,360px); display:flex; flex-direction:column; gap:10px; animation:lgfade .4s ease .6s both; }
+.ldr-bar-top { display:flex; justify-content:space-between; }
+.ldr-bar-lbl { font-family:var(--fd); font-size:9px; letter-spacing:.25em; color:rgba(255,255,255,.3); text-transform:uppercase; }
+.ldr-num { font-family:var(--fd); font-size:9px; letter-spacing:.2em; color:rgba(255,255,255,.55); }
+.ldr-bar { width:100%; height:1px; background:rgba(255,255,255,.1); position:relative; overflow:hidden; }
+.ldr-bar-fill { position:absolute; inset:0; background:var(--white); transform:translateX(-100%); transition:transform .1s linear; }
+.ldr-bar-glow { position:absolute; top:-2px; right:0; width:4px; height:5px; background:rgba(255,255,255,.9); border-radius:50%; opacity:0; transition:opacity .1s; }
 
 nav { position:fixed; top:0; left:0; right:0; z-index:1000; display:flex; align-items:center; justify-content:space-between; padding:28px 60px; transition:background .4s, padding .4s; }
 nav.scrolled { background:rgba(5,5,5,.93); backdrop-filter:blur(14px); padding:18px 60px; border-bottom:1px solid rgba(255,255,255,.06); }
@@ -304,9 +350,35 @@ input[type="range"].brange::-moz-range-thumb { width:18px; height:18px; backgrou
 <body>
 
 <div id="loader">
-  <div class="ldr-text">APEX AGENCIES</div>
-  <div class="ldr-bar"></div>
-  <div class="ldr-num" id="ldrN">0%</div>
+  <div class="ldr-grid"></div>
+  <div class="ldr-scan"></div>
+  <div class="ldr-corner tl"></div>
+  <div class="ldr-corner tr"></div>
+  <div class="ldr-corner bl"></div>
+  <div class="ldr-corner br"></div>
+  <div class="ldr-toptag">Digital Agency — Est. 2020</div>
+  <div class="ldr-inner">
+    <div class="ldr-logo-wrap">
+      <div class="ldr-apex">APEX</div>
+      <div class="ldr-agencies">Agencies</div>
+    </div>
+    <div class="ldr-divider"></div>
+    <div class="ldr-bar-wrap">
+      <div class="ldr-bar-top">
+        <span class="ldr-bar-lbl">Initializing</span>
+        <span class="ldr-num" id="ldrN">0%</span>
+      </div>
+      <div class="ldr-bar">
+        <div class="ldr-bar-fill" id="ldrFill"></div>
+        <div class="ldr-bar-glow" id="ldrGlow"></div>
+      </div>
+    </div>
+  </div>
+  <div class="ldr-status">
+    <span class="ldr-tag">Loading assets</span>
+    <div class="ldr-dot"></div><div class="ldr-dot"></div><div class="ldr-dot"></div>
+    <span class="ldr-tag">Web &amp; Marketing</span>
+  </div>
 </div>
 
 <div id="cur"></div><div id="cur2"></div>
@@ -356,7 +428,7 @@ input[type="range"].brange::-moz-range-thumb { width:18px; height:18px; backgrou
 <section class="sec" id="about" style="background:var(--black)">
   <div class="abi">
     <div class="rvl">
-      <div class="slbl">About Apex Agenciies</div>
+      <div class="slbl">About Apex Agencies</div>
       <h2 class="stitle">WE GROW LOCAL <em>BUSINESSES</em> DIGITALLY</h2>
     </div>
     <div class="rvr">
@@ -462,7 +534,7 @@ input[type="range"].brange::-moz-range-thumb { width:18px; height:18px; backgrou
 <footer>
   <div class="fttop">
     <div class="fcol fbrand">
-      <button class="logo" onclick="showMain()" style="display:inline-block;margin-bottom:4px">APEX<span>STUDIO</span></button>
+      <button class="logo" onclick="showMain()" style="display:inline-block;margin-bottom:4px">APEX<span>AGENCIES</span></button>
       <p>Web design & digital marketing agency helping local businesses grow online. Digital Agency, serving nationwide.</p>
     </div>
     <div class="fcol"><h4>Services</h4><ul><li><a onclick="goTo('services')">Web Design</a></li><li><a onclick="goTo('services')">SEO</a></li><li><a onclick="goTo('services')">Paid Ads</a></li><li><a onclick="goTo('services')">Social Media</a></li><li><a onclick="goTo('services')">Branding</a></li></ul></div>
@@ -519,7 +591,7 @@ input[type="range"].brange::-moz-range-thumb { width:18px; height:18px; backgrou
         <button class="back-btn" onclick="showMain()">Back to Home</button>
       </div>
 
-      <!-- FORM — same mechanism as Novus: action + POST to Formspree -->
+      <!-- FORM -->
       <form class="pform" id="pForm" action="https://formspree.io/f/xkoqanrw" method="POST" novalidate>
 
         <input type="hidden" id="budgetHidden" name="budget" value="₹25,000" />
@@ -601,9 +673,21 @@ input[type="range"].brange::-moz-range-thumb { width:18px; height:18px; backgrou
 // LOADER
 const ldr=document.getElementById('loader');
 const ldrN=document.getElementById('ldrN');
+const ldrFill=document.getElementById('ldrFill');
+const ldrGlow=document.getElementById('ldrGlow');
 let cnt=0;
-const li=setInterval(()=>{cnt+=Math.floor(Math.random()*12)+4;if(cnt>=100){cnt=100;clearInterval(li);}ldrN.textContent=cnt+'%';},80);
-setTimeout(()=>ldr.classList.add('done'),1800);
+const labels=['Initializing','Loading assets','Building UI','Almost ready','Launching'];
+const ldrLbl=document.querySelector('.ldr-bar-lbl');
+const li=setInterval(()=>{
+  cnt+=Math.floor(Math.random()*9)+3;
+  if(cnt>=100){cnt=100;clearInterval(li);}
+  ldrN.textContent=cnt+'%';
+  ldrFill.style.transform=`translateX(${cnt-100}%)`;
+  ldrGlow.style.opacity=cnt<100?'1':'0';
+  const li2=Math.floor(cnt/25);
+  if(labels[li2])ldrLbl.textContent=labels[li2];
+},60);
+setTimeout(()=>ldr.classList.add('done'),2000);
 
 // CURSOR
 const cur=document.getElementById('cur');
@@ -697,7 +781,7 @@ function validate(){
   return ok;
 }
 
-// FORM SUBMIT — same Formspree mechanism as Novus
+// FORM SUBMIT
 const form=document.getElementById('pForm');
 const sbtn=document.getElementById('sbtn');
 const succ=document.getElementById('succScreen');
@@ -706,7 +790,7 @@ form.addEventListener('submit',async function(e){
   e.preventDefault();
   if(!validate())return;
 
-  syncServices(); // make sure hidden field is up to date
+  syncServices();
 
   sbtn.classList.add('loading');
   sbtn.disabled=true;
